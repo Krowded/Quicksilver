@@ -51,15 +51,47 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\CharacterExploder.cs" />
-     <Compile Include="Assets\CharacterKiller.cs" />
-     <Compile Include="Assets\ControllerInput.cs" />
-     <Compile Include="Assets\DeathScript.cs" />
-     <Compile Include="Assets\DieOnCollision.cs" />
-     <Compile Include="Assets\InteractorScript.cs" />
-     <Compile Include="Assets\KillOnCollision.cs" />
-     <Compile Include="Assets\StartTime.cs" />
-     <Compile Include="Assets\StartVelocity.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\AfterImageDrawer.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\CharacterExploder.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\CharacterKiller.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\ClickTests.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\ColorManipulation.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\ControllerInput.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\DeathScript.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\DieOnCollision.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\DisableEnableTest.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\EmptyClass.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\EnergyBar.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\ExitOnClick.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\GravityTimeChange.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\HolderScript.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\InputHandler.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\InstantiateOnClick.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Interactable.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\InteractorScript.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\KillOnCollision.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Level1WinCondition.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Loader.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\LoaderAnimationScript.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\MatchPositionToChild.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Movable.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\OscillatingEnergyBar.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\RedirectProjectile.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Rotatable.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\shrinkOnMouse.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\StartTime.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\StartVelocity.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\TestShit.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\testsound.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\WinCondition.cs" />
+     <Compile Include="Assets\Prototype Materials\ShowcaseMovement.cs" />
+     <None Include="Assets\MyAssets\Shaders\DigitalShader.cginc" />
+     <None Include="Assets\MyAssets\Shaders\GhostShader.shader" />
+     <None Include="Assets\MyAssets\Shaders\ColorManipulation.cginc" />
+     <None Include="Assets\MyAssets\Shaders\Outline.shader" />
+     <None Include="Assets\MyAssets\Shaders\LoaderAnimationShader.shader" />
+     <None Include="Assets\MyAssets\Shaders\CelShader.shader" />
+     <None Include="Assets\MyAssets\Shaders\HolderShader.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

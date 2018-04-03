@@ -1,15 +1,18 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\InteractorScript.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CelShader.shader">
     <Files>
-      <File FileName="Assets\DieOnCollision.cs" Line="1" Column="1" />
-      <File FileName="Assets\Standard Assets\Characters\ThirdPersonCharacter\Scripts\AICharacterControl.cs" Line="31" Column="1" />
-      <File FileName="Assets\StartVelocity.cs" Line="27" Column="22" />
-      <File FileName="Assets\ControllerInput.cs" Line="35" Column="29" />
-      <File FileName="Assets\KillOnCollision.cs" Line="12" Column="38" />
-      <File FileName="Assets\InteractorScript.cs" Line="26" Column="2" />
-      <File FileName="Assets\StartTime.cs" Line="8" Column="1" />
-      <File FileName="Assets\CharacterKiller.cs" Line="6" Column="22" />
+      <File FileName="Assets\InteractorScript.cs" Line="1" Column="1" />
+      <File FileName="Assets\Movable.cs" Line="17" Column="16" />
+      <File FileName="Assets\Interactable.cs" Line="70" Column="139" />
+      <File FileName="Assets\Rotatable.cs" Line="1" Column="1" />
+      <File FileName="Assets\InputHandler.cs" Line="1" Column="1" />
+      <File FileName="Assets\Outline.shader" Line="14" Column="3" />
+      <File FileName="Assets\HolderShader.shader" Line="1" Column="34" />
+      <File FileName="Assets\HolderScript.cs" Line="1" Column="1" />
+      <File FileName="Assets\EnergyBar.cs" Line="1" Column="1" />
+      <File FileName="Assets\ColorManipulation.cs" Line="16" Column="65" />
+      <File FileName="Assets\CelShader.shader" Line="44" Column="34" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
