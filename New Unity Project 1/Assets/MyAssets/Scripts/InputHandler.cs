@@ -28,7 +28,7 @@ public class InputHandler : MonoBehaviour {
 		DynamicGI.UpdateEnvironment ();
 	}
 
-	void Update () {
+	void FixedUpdate () {
 		pickKeyDown = Input.GetKeyDown(PickUpKey);
 		timeKeyDown = Input.GetKeyDown(TimeKey);
 		forwardKeyDown = Input.GetKeyDown(ForwardKey);

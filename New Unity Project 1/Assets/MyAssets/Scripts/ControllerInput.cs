@@ -9,35 +9,29 @@ public class ControllerInput : MonoBehaviour {
 
 	private InputHandler input;
 
-	public Camera cam1;
-	public Camera cam2;
-
 	void Start() {
 		input = GetComponent<InputHandler> ();
 	}
 
 	void Update () {
 		if (input.timeKeyDown) {
-			Debug.Log ("Hit F. Toggle: " + ToggledOn);
 			if (ToggledOn) {
-				StopTime (Entities);
-//				cam1.enabled = !cam1.enabled;
-//				cam2.enabled = !cam2.enabled;
+				SlowTime (Entities);
+				Debug.Log ("Time Slowed");
 			} else {
 				StartTime (Entities);
-//				cam1.enabled = !cam1.enabled;
-//				cam2.enabled = !cam2.enabled;
+				Debug.Log ("Time Started");
 			}
 
 			ToggledOn = !ToggledOn;
-			Debug.Log ("Toggle: " + ToggledOn);
 		}
 	}
 
+	//Search through hierarchy (probably better to have a list, but it'll do for now)
 	void StartTime(Transform Entity) {
-		TimeInteractor st = Entity.GetComponent<TimeInteractor> ();
-		if (st != null) {
-			st.StartTime();	
+		TimeInteractable ti = Entity.GetComponent<TimeInteractable> ();
+		if (ti != null) {
+			ti.StartTime();	
 		}
 
 		foreach (Transform child in Entity.transform) {
@@ -45,14 +39,14 @@ public class ControllerInput : MonoBehaviour {
 		}
 	}
 
-	void StopTime(Transform Entity) {
-		TimeInteractor st = Entity.GetComponent<TimeInteractor> ();
-		if (st != null) {
-			st.StopTime();	
+	void SlowTime(Transform Entity) {
+		TimeInteractable ti = Entity.GetComponent<TimeInteractable> ();
+		if (ti != null) {
+			ti.SlowTime();	
 		}
 
 		foreach (Transform child in Entity.transform) {
-			StopTime (child);
+			SlowTime (child);
 		}
 	}
 }

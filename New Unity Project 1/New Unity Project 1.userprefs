@@ -1,18 +1,18 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CelShader.shader">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\MyAssets\Scripts\TimeInteractable.cs">
     <Files>
-      <File FileName="Assets\InteractorScript.cs" Line="1" Column="1" />
-      <File FileName="Assets\Movable.cs" Line="17" Column="16" />
-      <File FileName="Assets\Interactable.cs" Line="70" Column="139" />
-      <File FileName="Assets\Rotatable.cs" Line="1" Column="1" />
-      <File FileName="Assets\InputHandler.cs" Line="1" Column="1" />
-      <File FileName="Assets\Outline.shader" Line="14" Column="3" />
-      <File FileName="Assets\HolderShader.shader" Line="1" Column="34" />
-      <File FileName="Assets\HolderScript.cs" Line="1" Column="1" />
-      <File FileName="Assets\EnergyBar.cs" Line="1" Column="1" />
-      <File FileName="Assets\ColorManipulation.cs" Line="16" Column="65" />
-      <File FileName="Assets\CelShader.shader" Line="44" Column="34" />
+      <File FileName="Assets\MyAssets\Shaders\GhostShader.shader" Line="15" Column="4" />
+      <File FileName="Assets\MyAssets\Shaders\Outline.shader" Line="1" Column="1" />
+      <File FileName="Assets\MyAssets\Scripts\AfterImageDrawer.cs" Line="18" Column="38" />
+      <File FileName="Assets\MyAssets\Shaders\ColorManipulation.cginc" Line="14" Column="70" />
+      <File FileName="Assets\MyAssets\Scripts\Movable.cs" Line="13" Column="3" />
+      <File FileName="Assets\MyAssets\Scripts\InteractorScript.cs" Line="82" Column="36" />
+      <File FileName="Assets\MyAssets\Scripts\HolderScript.cs" Line="47" Column="54" />
+      <File FileName="Assets\MyAssets\Scripts\EnergyBar.cs" Line="20" Column="26" />
+      <File FileName="Assets\MyAssets\Scripts\InputHandler.cs" Line="31" Column="12" />
+      <File FileName="Assets\MyAssets\Scripts\ControllerInput.cs" Line="31" Column="36" />
+      <File FileName="Assets\MyAssets\Scripts\TimeInteractable.cs" Line="82" Column="47" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

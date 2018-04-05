@@ -102,6 +102,7 @@ public class InteractorScript : MonoBehaviour {
 	}
 
 	private void DropCancel() {
+		TriggerExit (HeldObject);
 		HeldInteractable.DropAndReset ();
 		ResetHeldObject ();
 		RemoveHolder ();
@@ -165,8 +166,12 @@ public class InteractorScript : MonoBehaviour {
 	}
 		
 	void OnTriggerExit(Collider col) {
-		if (col.gameObject == LookedAtObject) {
-			ColorChildren (LookedAtObject.transform, -1f*col.GetComponent<Interactable>().HighlightColor);
+		TriggerExit (col.gameObject);
+	}
+
+	void TriggerExit(GameObject go) {
+		if (go == LookedAtObject) {
+			ColorChildren (LookedAtObject.transform, -1f*go.GetComponent<Interactable>().HighlightColor);
 			LookedAtObject = null;
 			searchNewObject = true;
 		}
@@ -188,7 +193,6 @@ public class InteractorScript : MonoBehaviour {
 
 	void DisplayHolder() {
 		HolderObj.SetActive (true);
-		//Holder = Instantiate (HolderPrefab, Vector3.zero, Quaternion.identity).GetComponent<HolderScript>();
 		Holder.Initialize (HeldInteractable);
 	}
 
