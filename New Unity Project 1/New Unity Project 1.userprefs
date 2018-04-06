@@ -1,18 +1,9 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\MyAssets\Scripts\TimeInteractable.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\MyAssets\Scripts\LevelEventHandler.cs">
     <Files>
-      <File FileName="Assets\MyAssets\Shaders\GhostShader.shader" Line="15" Column="4" />
-      <File FileName="Assets\MyAssets\Shaders\Outline.shader" Line="1" Column="1" />
-      <File FileName="Assets\MyAssets\Scripts\AfterImageDrawer.cs" Line="18" Column="38" />
-      <File FileName="Assets\MyAssets\Shaders\ColorManipulation.cginc" Line="14" Column="70" />
-      <File FileName="Assets\MyAssets\Scripts\Movable.cs" Line="13" Column="3" />
-      <File FileName="Assets\MyAssets\Scripts\InteractorScript.cs" Line="82" Column="36" />
-      <File FileName="Assets\MyAssets\Scripts\HolderScript.cs" Line="47" Column="54" />
-      <File FileName="Assets\MyAssets\Scripts\EnergyBar.cs" Line="20" Column="26" />
-      <File FileName="Assets\MyAssets\Scripts\InputHandler.cs" Line="31" Column="12" />
-      <File FileName="Assets\MyAssets\Scripts\ControllerInput.cs" Line="31" Column="36" />
-      <File FileName="Assets\MyAssets\Scripts\TimeInteractable.cs" Line="82" Column="47" />
+      <File FileName="Assets\MyAssets\Scripts\LevelEvent.cs" Line="20" Column="3" />
+      <File FileName="Assets\MyAssets\Scripts\LevelEventHandler.cs" Line="6" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
