@@ -5,25 +5,29 @@ using UnityEngine;
 [RequireComponent(typeof(InputHandler))]
 public class ControllerInput : MonoBehaviour {
 	public Transform Entities;
-	private bool ToggledOn = false;
 
 	private InputHandler input;
+	private bool timeToggle = false;
+	private Vector3 baseGravity;
 
 	void Start() {
 		input = GetComponent<InputHandler> ();
+		baseGravity = Physics.gravity;
 	}
 
 	void Update () {
 		if (input.timeKeyDown) {
-			if (ToggledOn) {
+			if (timeToggle) {
+				Physics.gravity = 0.2f * baseGravity;
 				SlowTime (Entities);
 				Debug.Log ("Time Slowed");
 			} else {
+				Physics.gravity = baseGravity;
 				StartTime (Entities);
 				Debug.Log ("Time Started");
 			}
 
-			ToggledOn = !ToggledOn;
+			timeToggle = !timeToggle;
 		}
 	}
 

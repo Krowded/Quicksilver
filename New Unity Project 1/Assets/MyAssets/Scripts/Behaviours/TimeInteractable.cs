@@ -5,7 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class TimeInteractable : MonoBehaviour {
 
-	public Vector3 startVelocity;
+	//Local space start values
+	public Vector3 StartVelocity;
+	public Vector3 StartAngularVelocity;
 
 	[Range(0,1)]
 	public float NormalSpeed = 1;
@@ -19,29 +21,34 @@ public class TimeInteractable : MonoBehaviour {
 
 	private bool isSlow = false;
 	private bool isStopped = false;
+	private bool isRewinding = false;
 
-	private Vector3 storedVelocity = Vector3.zero;
-	private Vector3 storedAngularVelocity = Vector3.zero;
-	private Vector3 previousVelocity;
-	private Vector3 previousAngularVelocity;
+	private float storedVelocity = 0;
+	private float storedAngularVelocity = 0;
+	private float previousVelocity;
+	private float previousAngularVelocity;
 
 	private struct FrameState {
 		public FrameState(Transform tf, Rigidbody rb) {
 			this.position = tf.position;
 			this.rotation = tf.rotation;
-			this.velocity = rb.velocity;
-			this.angularVelocity = rb.angularVelocity;
+			this.velocity = rb.velocity.magnitude;
+			this.velocityDirection = rb.velocity.normalized;
+			this.angularVelocity = rb.angularVelocity.magnitude;
+			this.angularVelocityDirection = rb.angularVelocity.normalized;
 		}
 		public Vector3 position;
 		public Quaternion rotation;
-		public Vector3 velocity;
-		public Vector3 angularVelocity;
+		public Vector3 velocityDirection;
+		public float velocity;
+		public float angularVelocity;
+		public Vector3 angularVelocityDirection;
 	}
 
 	private List<FrameState> states = new List<FrameState>();
 	private int currentStateIndex = -1;
-	private bool rewind = false;
 	private int targetStateIndex = -1;
+
 
 	protected virtual void Start () {
 		tf = gameObject.transform;
@@ -50,57 +57,84 @@ public class TimeInteractable : MonoBehaviour {
 		baseKinematicState = rb.isKinematic;
 		baseGravityState = rb.useGravity;
 
-		//rb.velocity = startVelocity; //TODO: Remove this?
+		rb.velocity = StartVelocity;
+		rb.angularVelocity = StartAngularVelocity;
 
-		previousVelocity = rb.velocity;
-		previousAngularVelocity = rb.angularVelocity;
+		previousVelocity = rb.velocity.magnitude;
+		previousAngularVelocity = rb.angularVelocity.magnitude;
+
+		SlowTime ();
 	}
 
 	protected virtual void Update() {}
 
-	private void RewindFixedUpdate() {
-		if (currentStateIndex > targetStateIndex) {
-			tf.position = states [currentStateIndex].position;
-			tf.rotation = states [currentStateIndex].rotation;
-			rb.velocity = states [currentStateIndex].velocity;
-			rb.angularVelocity = states [currentStateIndex].angularVelocity;
-			--currentStateIndex;
-		} else {
-			rewind = false;
-			SlowTime ();
-		}
+	public virtual void StartTime() {
+		ResetState ();
 	}
 
-	private void StoreForce(float scale) {
-		Vector3 velocityToStore = (1-scale) * (rb.velocity - previousVelocity);
+	public virtual void SlowTime() {
+		ResetState ();
+		StoreVelocity (SlowSpeed);
+		isSlow = true;
+	}
+
+	public virtual void StopTime() {
+		ResetState ();
+		StoreVelocity(0);
+
+		//FIXME: Possible bugs here. We change this directly both here and in interactor. Combine the effects somehow?
+		rb.isKinematic = true;
+		rb.useGravity = false;
+
+		isStopped = true;
+	}
+
+	public virtual void RewindTime(int ticks) {
+		isRewinding = true;
+		targetStateIndex = Mathf.Max (-1, currentStateIndex - ticks);
+	}
+
+	private void StoreRelativeVelocity(float scale) {
+		//This is done a lot, and does a lot of normalization. If performance problem: switch to squared normalization
+
+		float inverseScale = 1f - scale;
+		float velocityToStore = inverseScale * (rb.velocity.magnitude - previousVelocity);
 		storedVelocity += velocityToStore;
-		rb.velocity -= velocityToStore;
-		previousVelocity = rb.velocity;
+		rb.velocity -= velocityToStore*rb.velocity.normalized;
+		previousVelocity = rb.velocity.magnitude;
 
-		Vector3 angularVelocityToStore =  (1 - scale) * rb.angularVelocity - previousAngularVelocity;
+		float angularVelocityToStore =  inverseScale * (rb.angularVelocity.magnitude - previousAngularVelocity);
 		storedAngularVelocity += angularVelocityToStore;
-		rb.angularVelocity -= angularVelocityToStore;
-		previousAngularVelocity = rb.angularVelocity;
+		rb.angularVelocity -= angularVelocityToStore * rb.angularVelocity.normalized;
+		previousAngularVelocity = rb.angularVelocity.magnitude;
 	}
 
-	private void RestoreForce() {
-		if (isSlow && Vector3.Magnitude(rb.velocity) < 0.000001f) {
-			return;
-		}
+	//TODO: Find a better name for this. Confusing
+	private void StoreVelocity(float scale) {
+		float inverseScale = 1f - scale;
+		storedVelocity += inverseScale * rb.velocity.magnitude;
+		rb.velocity *= scale;
+		previousVelocity = rb.velocity.magnitude;
 
-		rb.velocity += storedVelocity;
-		storedVelocity = Vector3.zero;
-		rb.angularVelocity = storedAngularVelocity;
-		storedAngularVelocity = Vector3.zero;
+		storedAngularVelocity += inverseScale * rb.angularVelocity.magnitude;
+		rb.angularVelocity *= scale;
+		previousAngularVelocity = rb.angularVelocity.magnitude;
+	}
+
+	private void RestoreVelocity() {
+		rb.velocity += storedVelocity*rb.velocity.normalized;
+		storedVelocity = 0;
+		rb.angularVelocity = storedAngularVelocity * rb.angularVelocity.normalized;
+		storedAngularVelocity = 0;
 	}
 
 	protected virtual void FixedUpdate() {
-		if (rewind) {
+		if (isRewinding) {
 			RewindFixedUpdate ();
 		} else {
 			//Update state
 			if (isSlow) {
-				StoreForce (SlowSpeed);
+				StoreRelativeVelocity (SlowSpeed);
 			} else if (isStopped) {
 				//Do nothing? Don't store state?
 			}
@@ -116,38 +150,25 @@ public class TimeInteractable : MonoBehaviour {
 
 		}
 	}
+
+	private void RewindFixedUpdate() {
+		if (currentStateIndex > targetStateIndex) {
+			tf.position = states [currentStateIndex].position;
+			tf.rotation = states [currentStateIndex].rotation;
+			rb.velocity = states [currentStateIndex].velocity * states [currentStateIndex].velocityDirection;
+			rb.angularVelocity = states [currentStateIndex].angularVelocity * states [currentStateIndex].angularVelocityDirection;
+			--currentStateIndex;
+		} else {
+			isRewinding = false;
+			SlowTime ();
+		}
+	}
 		
-	private void ResetNaturalState () {
+	private void ResetState () {
 		isStopped = false;
 		isSlow = false;
 		rb.isKinematic = baseKinematicState;
 		rb.useGravity = baseGravityState;
-		RestoreForce ();
-	}
-
-	public virtual void StartTime() {
-		ResetNaturalState ();
-	}
-
-	public virtual void SlowTime() {
-		ResetNaturalState ();
-		StoreForce (SlowSpeed);
-		isSlow = true;
-	}
-
-	public virtual void StopTime() {
-		ResetNaturalState ();
-		StoreForce (0);
-
-		//Possible bugs here. We change this directly both here and in interactor. Combine the effects somehow?
-		rb.isKinematic = true;
-		rb.useGravity = false;
-
-		isStopped = true;
-	}
-
-	public virtual void RewindTime(int ticks) {
-		rewind = true;
-		targetStateIndex = Mathf.Max (-1, currentStateIndex - ticks);
+		RestoreVelocity ();
 	}
 }

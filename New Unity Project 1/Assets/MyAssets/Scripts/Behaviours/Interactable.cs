@@ -37,11 +37,12 @@ public abstract class Interactable : MonoBehaviour
 	protected virtual void ProtectedDrop() {}
 
 	public void DropAndReset() {
+		Drop ();
 		ProtectedDropAndReset ();
 	}
 
 	protected virtual void ProtectedDropAndReset() {
-		Drop ();
+		
 	}
 
 	public virtual float GetCost() {

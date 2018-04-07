@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Movable : Interactable {
 	private Vector3 startPosition;
+	private bool gravityState;
 
 	public override Vector3[] linePositions {
 		get {
@@ -14,6 +15,8 @@ public class Movable : Interactable {
 		
 	protected override void ProtectedGrab() {
 		startPosition = gameObject.transform.position;
+
+		Rigidbody rb = gameObject.GetComponent<Rigidbody> ();
 	}
 
 	protected override void ProtectedDropAndReset() {

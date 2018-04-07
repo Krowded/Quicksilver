@@ -26,6 +26,7 @@ public class InteractorScript : MonoBehaviour {
 	//State machine
 	private bool searchNewObject = false;
 	private bool justPickedUp = true;
+	private bool justDropped = false;
 
 	void Start () {
 		Holder = HolderObj.GetComponent<HolderScript> ();
@@ -69,7 +70,9 @@ public class InteractorScript : MonoBehaviour {
 		gameObject.transform.position = parentTransform.position + parentTransform.forward * DistanceFromFace;
 		if (HeldObject != null) {
 			HandleHeldObject ();
-			Holder.UpdateParameters(1-energyBar.PossibleEnergyRatio);
+			Holder.UpdateParameters (1 - energyBar.PossibleEnergyRatio);
+		} else {
+			justDropped = false;
 		}
 	}
 
@@ -96,17 +99,19 @@ public class InteractorScript : MonoBehaviour {
 		RemoveHolder ();
 		energyBar.ApplyCost ();
 		energyBar.PossibleCost = 0;
+		justDropped = true;
 
 		linerender.enabled = false;
 		Debug.Log ("Dropped with new values!");
 	}
 
 	private void DropCancel() {
-		TriggerExit (HeldObject); //Manually, since teleportation isn't registered
 		HeldInteractable.DropAndReset ();
+		TriggerExit (HeldObject); //Manually, since teleportation isn't registered
 		ResetHeldObject ();
 		RemoveHolder ();
 		energyBar.PossibleCost = 0;
+		justDropped = true;
 
 		linerender.enabled = false;
 		Debug.Log ("Dropped and reset!");
@@ -184,7 +189,7 @@ public class InteractorScript : MonoBehaviour {
 		}
 
 		if (col.gameObject == LookedAtObject) {
-			if (HeldObject == null && input.pickKeyDown) {
+			if (!justDropped && HeldObject == null && input.pickKeyDown) {
 				PickUp ();
 			}
 		}
