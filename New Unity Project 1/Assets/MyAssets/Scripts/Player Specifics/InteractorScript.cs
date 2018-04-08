@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AfterImageDrawer))]
-[RequireComponent(typeof(LineRenderer))]
 public class InteractorScript : MonoBehaviour {
 	//Interaction components
 	public EnergyBar energyBar;
-	private InputHandler input;
-	private LineRenderer linerender;
 	private AfterImageDrawer afterImage;
 	public GameObject HolderObj;
 	public Transform parentTransform;
@@ -30,20 +27,7 @@ public class InteractorScript : MonoBehaviour {
 
 	void Start () {
 		Holder = HolderObj.GetComponent<HolderScript> ();
-
 		afterImage = GetComponent<AfterImageDrawer> ();
-
-		linerender = GetComponent<LineRenderer> ();
-		linerender.SetPositions (new Vector3[]{Vector3.zero, Vector3.zero});
-		linerender.positionCount = 2;
-		linerender.widthMultiplier = 0.01f;
-		linerender.enabled = false;
-
-		//Setup input
-		input = FindObjectOfType<InputHandler> ();
-		if (input == null) {
-			throw new MissingComponentException ("Found no InputHandler");
-		}
 
 		//Make sure we have the transform of the owner of the interactor
 		if (parentTransform == null) {
@@ -57,10 +41,6 @@ public class InteractorScript : MonoBehaviour {
 					    endPosition: HeldInteractable.linePositions[HeldInteractable.linePositions.Length-1]);
 		afterImage.StartColor = energyBar.InterpolatedColor;
 		afterImage.EndColor = energyBar.InterpolatedPossibleColor;
-
-		linerender.SetPositions(HeldInteractable.linePositions);
-		linerender.material.color = energyBar.LineColor;
-		//linerender.enabled = true;
 	}
 	void UpdateCost() {
 		energyBar.PossibleCost = HeldInteractable.GetCost();
@@ -76,19 +56,27 @@ public class InteractorScript : MonoBehaviour {
 		}
 	}
 
-	void HandleHeldObject() {
-		HeldObject.transform.position = gameObject.transform.position;
-		if (!justPickedUp) {
-			if (input.pickKeyDown && energyBar.HaveEnoughEnergy ()) {
-				DropHere ();
-				return;
-			} else if (input.resetKeyDown) {
-				DropCancel ();
-				return;
+	public void PickUpOrDrop() {
+		if (HeldObject == null) {
+			if (LookedAtObject != null && !justDropped) {
+				PickUp ();
 			}
 		} else {
-			justPickedUp = false;
+			if (!justPickedUp && energyBar.HaveEnoughEnergy ()) {
+				DropHere ();
+			}
 		}
+	}
+
+	public void Reset() {
+		if (HeldObject != null) {
+			DropCancel ();
+		}
+	}
+
+	void HandleHeldObject() {
+		HeldObject.transform.position = gameObject.transform.position;
+		justPickedUp = false;
 		UpdateCost();
 		UpdateLine();
 	}
@@ -101,7 +89,6 @@ public class InteractorScript : MonoBehaviour {
 		energyBar.PossibleCost = 0;
 		justDropped = true;
 
-		linerender.enabled = false;
 		Debug.Log ("Dropped with new values!");
 	}
 
@@ -112,8 +99,6 @@ public class InteractorScript : MonoBehaviour {
 		RemoveHolder ();
 		energyBar.PossibleCost = 0;
 		justDropped = true;
-
-		linerender.enabled = false;
 		Debug.Log ("Dropped and reset!");
 	}
 
@@ -186,12 +171,6 @@ public class InteractorScript : MonoBehaviour {
 		if (searchNewObject) {
 			OnTriggerEnter(col);
 			return;
-		}
-
-		if (col.gameObject == LookedAtObject) {
-			if (!justDropped && HeldObject == null && input.pickKeyDown) {
-				PickUp ();
-			}
 		}
 	}
 

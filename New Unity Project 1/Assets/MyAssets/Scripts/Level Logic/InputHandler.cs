@@ -13,6 +13,7 @@ public class InputHandler : MonoBehaviour {
 	public KeyCode RightKey = KeyCode.D;
 	public KeyCode ResetKey = KeyCode.E;
 	public KeyCode RestartKey = KeyCode.R;
+	public KeyCode RewindKey = KeyCode.E;
 
 	[HideInInspector] public bool pickKeyDown = false;
 	[HideInInspector] public bool timeKeyDown = false;
@@ -22,6 +23,7 @@ public class InputHandler : MonoBehaviour {
 	[HideInInspector] public bool rightKeyDown = false;
 	[HideInInspector] public bool resetKeyDown = false;
 	[HideInInspector] public bool restartKeyDown = false;
+	[HideInInspector] public bool rewindKeyDown = false;
 
 	void Start() {
 		//TODO: Move this somewhere more appropriate (fixes light at reload)
@@ -38,6 +40,7 @@ public class InputHandler : MonoBehaviour {
 		rightKeyDown = Input.GetKeyDown(RightKey);
 		resetKeyDown = Input.GetKeyDown (ResetKey);
 		restartKeyDown = Input.GetKeyDown (RestartKey);
+		rewindKeyDown = Input.GetKeyDown (RewindKey);
 
 		//TODO: Move this somewhere more appropriate (e.g. loader)
 		if (restartKeyDown) {

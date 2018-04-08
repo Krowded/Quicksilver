@@ -24,7 +24,6 @@ public class EnergyBar : MonoBehaviour {
 	public Color LineFullColor;
 	public Color LineEmptyColor;
 
-
 	private bool timeIsGoingFast = false;
 
 	private GUIStyle style;
@@ -104,6 +103,7 @@ public class EnergyBar : MonoBehaviour {
 		}
 	}
 
+	/* No longer drawing an energy bar
 	void OnGUI() {
 		float width = MaxWidth * ((float)CurrentEnergy/(float)MaxEnergy);
 		pixel.SetPixel (0, 0, InterpolatedColor);
@@ -118,7 +118,7 @@ public class EnergyBar : MonoBehaviour {
 				DisplayWarning ();
 			}
 		}
-	}
+	}//*/
 
 	void DisplayWarning() {
 		GUI.Label (new Rect(X+10, Y+Height+5, 1000, 1000), "OVER ENERGY LIMIT!", warningStyle);

@@ -16,7 +16,7 @@ public class Movable : Interactable {
 	protected override void ProtectedGrab() {
 		startPosition = gameObject.transform.position;
 
-		Rigidbody rb = gameObject.GetComponent<Rigidbody> ();
+		//Rigidbody rb = gameObject.GetComponent<Rigidbody> ();
 	}
 
 	protected override void ProtectedDropAndReset() {
