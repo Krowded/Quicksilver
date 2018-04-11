@@ -119,7 +119,8 @@ public class InteractorScript : MonoBehaviour {
 		HeldInteractable.Grab();
 		Mesh m = HeldInteractable.MeshFilter.mesh;
 		if (m != null) {
-			afterImage.StartDrawing (m);
+			afterImage.SetMesh (m);
+			afterImage.StartDrawing ();
 		} else {
 			//HeldInteractable.Mesh ();
 			throw new UnityException ("Picked up object without mesh");

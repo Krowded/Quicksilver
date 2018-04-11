@@ -15,7 +15,6 @@ struct v2fDigital
 	float4 color : COLOR;
 };
 
-
 v2fDigital vertDigital (appdataDigital v)
 {
 	v2fDigital o;

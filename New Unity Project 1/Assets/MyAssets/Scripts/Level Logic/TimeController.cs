@@ -24,6 +24,14 @@ public class TimeController : MonoBehaviour {
 		baseGravity = Physics.gravity;
 	}
 
+	void SetState() {
+		if (timeIsNormal) {
+			Physics.gravity = baseGravity;
+		} else {
+			Physics.gravity = SlowTimeScale * baseGravity;
+		}
+	}
+
 	void Update () {
 		if (rewinding) {
 			if (input.rewindKeyDown) {
@@ -32,16 +40,15 @@ public class TimeController : MonoBehaviour {
 		} else {
 			if (input.timeKeyDown) {
 				if (timeIsNormal) {
-					Physics.gravity = SlowTimeScale * baseGravity;
 					SlowTime (Hierarchy);
 					Debug.Log ("Time Slowed");
 				} else {
-					Physics.gravity = baseGravity;
 					StartTime (Hierarchy);
 					Debug.Log ("Time Started");
 				}
 
 				timeIsNormal = !timeIsNormal;
+				SetState ();
 			} else if (input.rewindKeyDown) {
 				RewindTime (Hierarchy);
 			}
@@ -87,10 +94,15 @@ public class TimeController : MonoBehaviour {
 
 		rewinding = false;
 
-		//Find a timestate and steal it..
-		timeIsNormal = (timeKeeper.currentTimeState == TimeInteractable.TimeState.Normal);
-	}
 
+
+		/*
+		//Find a timestate and steal it.. //FIXME: Either change how we do this or at least make it more clear that this happens
+		timeIsNormal = (timeKeeper.currentTimeState == TimeInteractable.TimeState.Normal);
+		*/
+
+		SlowTime (hierarchy); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate
+	}
 
 	delegate void OnEachFunction(Transform tf);
 	void TraverseAndApplyToHierarchy(Transform hierarchy, OnEachFunction f) {

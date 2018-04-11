@@ -7,6 +7,9 @@ public class TimeInteractable : MonoBehaviour {
 
 	public enum TimeState { Normal, Slow, Stop, Rewind };
 
+	private RewindDrawer rewindDrawer;
+
+
 	//Local space start values
 	public Vector3 StartVelocity;
 	public Vector3 StartAngularVelocity;
@@ -28,7 +31,7 @@ public class TimeInteractable : MonoBehaviour {
 	private float previousVelocity;
 	private float previousAngularVelocity;
 
-	private struct FrameState {
+	public struct FrameState {
 		public FrameState(Transform tf, Rigidbody rb, TimeState ts, float storedVelocity, float storedAngularVelocity) {
 			this.position = tf.position;
 			this.rotation = tf.rotation;
@@ -39,7 +42,7 @@ public class TimeInteractable : MonoBehaviour {
 
 			this.storedVelocity = storedVelocity;
 			this.storedAngularVelocity = storedAngularVelocity;
-			this.timeState = ts;
+			this.timeState = ts; //Not necessary currently. But if we change things later?
 		}
 		public Vector3 position;
 		public Quaternion rotation;
@@ -70,6 +73,11 @@ public class TimeInteractable : MonoBehaviour {
 		previousVelocity = rb.velocity.magnitude;
 		previousAngularVelocity = rb.angularVelocity.magnitude;
 
+		rewindDrawer = GetComponent<RewindDrawer> ();
+		if (rewindDrawer != null && !rewindDrawer.MeshIsSet()) {
+			rewindDrawer.SetMesh(this.GetComponent<MeshFilter>().mesh);
+		}
+
 		SlowTime ();
 	}
 
@@ -98,10 +106,27 @@ public class TimeInteractable : MonoBehaviour {
 
 	public virtual void RewindTime() {
 		timeState = TimeState.Rewind;
+		DrawRewind ();
 	}
 
 	public virtual void StopRewind() {
 		timeState = states[currentStateIndex].timeState;
+		StopDrawingRewind ();
+	}
+
+	protected virtual void DrawRewind() {
+		if (rewindDrawer != null) {
+			rewindDrawer.StartColor = Color.gray;
+			rewindDrawer.EndColor = Color.gray*1.5f;
+			rewindDrawer.UpdatePositions (tf, states, currentStateIndex+1); //Need to set colors before updating positions
+			rewindDrawer.StartDrawing ();
+		}
+	}
+
+	protected virtual void StopDrawingRewind() {
+		if (rewindDrawer != null) {
+			rewindDrawer.StopDrawing();
+		}
 	}
 
 	private void StoreRelativeVelocity(float scale) {
@@ -187,5 +212,7 @@ public class TimeInteractable : MonoBehaviour {
 		rb.isKinematic = baseKinematicState;
 		rb.useGravity = baseGravityState;
 		RestoreVelocity ();
+
+		StopDrawingRewind ();
 	}
 }
