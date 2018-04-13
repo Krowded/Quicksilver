@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 [RequireComponent(typeof(Rigidbody))]
 public class TimeInteractable : MonoBehaviour {
-
-	public enum TimeState { Normal, Slow, Stop, Rewind };
-
 	private RewindDrawer rewindDrawer;
 
 	//Local space start values
@@ -134,7 +132,7 @@ public class TimeInteractable : MonoBehaviour {
 			rewindDrawer.StartColor = Color.gray;
 			rewindDrawer.EndColor = Color.gray*1.5f;
 			rewindDrawer.UpdatePositions (tf, states, currentStateIndex+1); //Need to set colors before updating positions
-			rewindDrawer.StartDrawing ();
+			rewindDrawer.StartDrawing (rewindSpeed);
 		}
 	}
 

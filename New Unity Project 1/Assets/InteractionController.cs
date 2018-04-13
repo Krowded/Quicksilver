@@ -7,6 +7,7 @@ public class InteractionController : MonoBehaviour
 	public InputHandler input;
 	public TimeController timeController;
 	private InteractorScript interactor;
+	public int RewindSpeedOnCancel = 1;
 
 	void Start() {
 		interactor = GetComponent<InteractorScript> ();
@@ -19,7 +20,7 @@ public class InteractionController : MonoBehaviour
 			interactor.PickUpOrDrop ();
 		} else if (input.resetKeyDown) {
 			interactor.Reset ();
-			timeController.RewindTime (timeController.Hierarchy);
+			timeController.RewindTime (timeController.Hierarchy, RewindSpeedOnCancel);
 		}
 	}
 }

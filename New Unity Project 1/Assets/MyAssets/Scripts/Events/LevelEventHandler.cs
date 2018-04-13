@@ -18,6 +18,8 @@ public class LevelEventHandler : MonoBehaviour {
 
 	public void UpdateEvents() {
 		Events.Clear ();
+
+		//BFS for events => events trigger in hierarchical order
 		Stack<GameObject> eventHierarchy = new Stack<GameObject> ();
 		eventHierarchy.Push (EventHierarchy);
 

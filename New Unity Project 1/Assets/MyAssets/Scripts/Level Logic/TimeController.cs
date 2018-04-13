@@ -6,12 +6,19 @@ using UnityEngine;
 public class TimeController : MonoBehaviour {
 	public Transform Hierarchy;
 	public int SlowTimeFactor = 5;
+	public int RewindSpeed = 1;
+	public int MaxSlowDownFactor = 5;
+
+	private int currentSlowFactor;
+	private int currentRewindSpeed;
+
 	private InputHandler input;
 	//private GlobalTimeKeeper timeKeeper;
 
 	private Vector3 baseGravity;
-	private bool timeIsNormal = false;
-	private bool rewinding = false;
+	public TimeState timeState;
+	//private bool timeIsNormal = false;
+	//private bool rewinding = false;
 	private int frameCount = 0; //Need to keep track of frame count so we don't overshoot on rewind
 
 	void Start() {
@@ -21,27 +28,26 @@ public class TimeController : MonoBehaviour {
 	}
 
 	void SetState() {
-		if (timeIsNormal) {
+		if (timeState == TimeState.Normal) {
 			Physics.gravity = baseGravity;
-		} else {
-			Physics.gravity = (1f/(float)SlowTimeFactor) * baseGravity;
+		} else if (timeState == TimeState.Slow) {
+			Physics.gravity = (1f/(float)currentSlowFactor) * baseGravity;
 		}
 	}
 
 	void Update () {
-		if (rewinding) {
+		if (timeState == TimeState.Rewind) {
 			if (input.rewindKeyDown) {
 				StopRewind (Hierarchy);
 			}
 		} else {
 			if (input.timeKeyDown) {
-				if (timeIsNormal) {
+				if (timeState == TimeState.Normal) {
 					SlowTime (Hierarchy);
 				} else {
 					StartTime (Hierarchy);
 				}
-
-				timeIsNormal = !timeIsNormal;
+					
 				SetState ();
 			} else if (input.rewindKeyDown) {
 				RewindTime (Hierarchy);
@@ -50,13 +56,13 @@ public class TimeController : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (rewinding) {
-			if (frameCount < 0) {
+		if (timeState == TimeState.Rewind) {
+			if (frameCount == 0) {
 				StopRewind (Hierarchy);
 			}
-			--frameCount;
-		} else if (timeIsNormal) {
-			frameCount += SlowTimeFactor;
+			frameCount = Mathf.Max(0, frameCount-currentRewindSpeed);
+		} else if (timeState == TimeState.Normal) {
+			frameCount += currentSlowFactor;
 		} else {
 			++frameCount;
 		}
@@ -67,28 +73,50 @@ public class TimeController : MonoBehaviour {
 		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
 			timeInteractable.StartTime ();
 		});
+
+		timeState = TimeState.Normal;
 	}
 
-	public void SlowTime(Transform hierarchy) {
+	public void StopTime(Transform hierarchy) {
 		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
-			timeInteractable.SlowTime (SlowTimeFactor);
+			timeInteractable.StopTime ();
 		});
+
+		timeState = TimeState.Stop;
 	}
 
-	public void RewindTime(Transform hierarchy) {
+	public void SlowTime(Transform hierarchy, int customSlowFactor = -1) {
+		if (customSlowFactor == -1) {
+			currentSlowFactor = SlowTimeFactor;
+		} else {
+			currentSlowFactor = customSlowFactor;
+		}
+
 		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
-			timeInteractable.RewindTime ();
+			timeInteractable.SlowTime (currentSlowFactor);
 		});
 
-		rewinding = true;
+		timeState = TimeState.Slow;
+	}
+
+	public void RewindTime(Transform hierarchy, int customRewindSpeed = -1) {
+		if (customRewindSpeed == -1) {
+			currentRewindSpeed = RewindSpeed;
+		} else {
+			currentRewindSpeed = customRewindSpeed;
+		}
+
+		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
+			timeInteractable.RewindTime (currentRewindSpeed);
+		});
+
+		timeState = TimeState.Rewind;
 	}
 
 	public void StopRewind(Transform hierarchy) {
 		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
 			timeInteractable.StopRewind ();
 		});
-
-		rewinding = false;
 
 		SlowTime (hierarchy); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate
 	}

@@ -5,6 +5,8 @@ using UnityEngine;
 public class RewindDrawer : AfterImageDrawer {
 	private GameObject tempObject2;
 
+	private int rewindSpeed = 0;
+
 	private List<int> usedIndices;
 	private int totalPoints = -1;
 
@@ -25,11 +27,16 @@ public class RewindDrawer : AfterImageDrawer {
 
 	private void FixedUpdate() { //Rewind, so we have one state per fixedupdate guaranteed
 		if (totalPoints >= 0) {
-			--totalPoints;
-			if (totalPoints < usedIndices [count - 1]) {
+			totalPoints -= rewindSpeed;
+			while (count > 0 && totalPoints < usedIndices [count - 1]) {
 				--count;
 			}
 		}
+	}
+
+	public void StartDrawing(int rewindSpeed) {
+		this.rewindSpeed = rewindSpeed;
+		base.StartDrawing ();
 	}
 
 	public void UpdatePositions(Transform baseTransform, List<TimeInteractable.FrameState> states, int size = -1) {

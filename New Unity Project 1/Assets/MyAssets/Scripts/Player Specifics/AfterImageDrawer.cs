@@ -7,6 +7,7 @@ public class AfterImageDrawer : MonoBehaviour {
 	public float DistanceBetweenDraws = 0.3f;
 
 	private bool active = false;
+	[HideInInspector]
 	public MeshFilter meshFilter;
 	private Mesh mesh;
 
