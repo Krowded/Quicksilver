@@ -5,9 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(InputHandler))]
 public class TimeController : MonoBehaviour {
 	public Transform Hierarchy;
-	public float SlowTimeScale = 0.2f;
+	public int SlowTimeFactor = 5;
 	private InputHandler input;
-	private GlobalTimeKeeper timeKeeper;
+	//private GlobalTimeKeeper timeKeeper;
 
 	private Vector3 baseGravity;
 	private bool timeIsNormal = false;
@@ -16,19 +16,15 @@ public class TimeController : MonoBehaviour {
 
 	void Start() {
 		input = GetComponent<InputHandler> ();
-		timeKeeper = Hierarchy.GetComponent<GlobalTimeKeeper> ();
-		if (timeKeeper == null) {
-			throw new UnityException ("Hierarchy missing GlobalTimeKeeper");
-		}
-
 		baseGravity = Physics.gravity;
+		SlowTime (Hierarchy); //Start slow
 	}
 
 	void SetState() {
 		if (timeIsNormal) {
 			Physics.gravity = baseGravity;
 		} else {
-			Physics.gravity = SlowTimeScale * baseGravity;
+			Physics.gravity = (1f/(float)SlowTimeFactor) * baseGravity;
 		}
 	}
 
@@ -41,10 +37,8 @@ public class TimeController : MonoBehaviour {
 			if (input.timeKeyDown) {
 				if (timeIsNormal) {
 					SlowTime (Hierarchy);
-					Debug.Log ("Time Slowed");
 				} else {
 					StartTime (Hierarchy);
-					Debug.Log ("Time Started");
 				}
 
 				timeIsNormal = !timeIsNormal;
@@ -57,10 +51,12 @@ public class TimeController : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (rewinding) {
-			--frameCount;
-			if (frameCount <= 0) {
+			if (frameCount < 0) {
 				StopRewind (Hierarchy);
 			}
+			--frameCount;
+		} else if (timeIsNormal) {
+			frameCount += SlowTimeFactor;
 		} else {
 			++frameCount;
 		}
@@ -68,38 +64,31 @@ public class TimeController : MonoBehaviour {
 
 	//Search through hierarchy (probably better to have a list, but it'll do for now)
 	public void StartTime(Transform hierarchy) {
-		TraverseAndApplyToTimeHierarchy (hierarchy, (ti) => {
-			ti.StartTime ();
+		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
+			timeInteractable.StartTime ();
 		});
 	}
 
 	public void SlowTime(Transform hierarchy) {
-		TraverseAndApplyToTimeHierarchy (hierarchy, (ti) => {
-			ti.SlowTime ();
+		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
+			timeInteractable.SlowTime (SlowTimeFactor);
 		});
 	}
 
 	public void RewindTime(Transform hierarchy) {
-		TraverseAndApplyToTimeHierarchy (hierarchy, (ti) => {
-			ti.RewindTime ();
+		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
+			timeInteractable.RewindTime ();
 		});
 
 		rewinding = true;
 	}
 
 	public void StopRewind(Transform hierarchy) {
-		TraverseAndApplyToTimeHierarchy (hierarchy, (ti) => {
-			ti.StopRewind ();
+		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
+			timeInteractable.StopRewind ();
 		});
 
 		rewinding = false;
-
-
-
-		/*
-		//Find a timestate and steal it.. //FIXME: Either change how we do this or at least make it more clear that this happens
-		timeIsNormal = (timeKeeper.currentTimeState == TimeInteractable.TimeState.Normal);
-		*/
 
 		SlowTime (hierarchy); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate
 	}
@@ -113,12 +102,12 @@ public class TimeController : MonoBehaviour {
 		}
 	}
 
-	delegate void OnEachTimeFunction(TimeInteractable ti);
+	delegate void OnEachTimeFunction(TimeInteractable timeInteractable);
 	void TraverseAndApplyToTimeHierarchy(Transform hierarchy, OnEachTimeFunction f) {
-		TraverseAndApplyToHierarchy (hierarchy, (x) => { 
-			TimeInteractable ti = x.GetComponent<TimeInteractable> ();
-			if (ti != null) {
-				f(ti);
+		TraverseAndApplyToHierarchy (hierarchy, (transform) => { 
+			TimeInteractable timeInteractable = transform.GetComponent<TimeInteractable> ();
+			if (timeInteractable != null) {
+				f(timeInteractable);
 			}
 		});
 	}

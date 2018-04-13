@@ -49,31 +49,29 @@ public class RewindDrawer : AfterImageDrawer {
 		tempObject2.transform.localScale = baseTransform.localScale*0.99f; //Slightly smaller, so it can hide inside object if necessary
 		Transform tempTransform = tempObject2.transform;
 
+		int positionSublist = -1;
+		int sublistStartIndex = 0;
 		Vector3 previousPos = Vector3.zero;
-		for(int i = 0, tempCount = totalPoints; tempCount > 0; ++i, tempCount -= 1023) {
-			AllocateInstanceMemory (i+1);
-			int startIndex = i * 1023;
-			for (int j = startIndex; j < totalPoints; ++j) {
-				if (i+j == 0 || Vector3.Magnitude(previousPos - states[i].position) > DistanceBetweenDraws) {
-					tempTransform.position = states[startIndex+j].position;
-					tempTransform.rotation = states[startIndex+j].rotation;
-					positions[i][count - startIndex] = tempTransform.localToWorldMatrix;
-					usedIndices.Add (startIndex+j);
-					++count;
-				}
-				previousPos = states [startIndex+j].position;
+		for (int i = 0; i < totalPoints; ++i) {
+			if (i == 0 || count - sublistStartIndex == 1023) {
+				++positionSublist;
+				AllocateInstanceMemory (positionSublist+1);
+				sublistStartIndex = positionSublist * 1023;
 			}
+
+			if (i == 0 || Vector3.Magnitude(previousPos - states[i].position) > DistanceBetweenDraws) {
+				tempTransform.position = states[i].position;
+				tempTransform.rotation = states[i].rotation;
+				positions[positionSublist][count - sublistStartIndex] = tempTransform.localToWorldMatrix;
+				usedIndices.Add (i);
+				++count;
+
+				previousPos = tempTransform.position;
+			}
+
+
 		}
 
-		/*
-		int tempCount = count;
-		for(int i = 0; i <= (count-1)/1023; ++i) {
-			for (int j = 0; j < count; ++j) {
-				colors[i][j] = ColorManipulation.LerpColorsCorrected (StartColor, EndColor, (float)(i*1023+j)/(float)count);
-			}
-			propBlocks[i].Clear ();
-			propBlocks[i].SetVectorArray ("_Color", colors[i]);
-		}*/
 		CalculateAndSetColors ();
 	}
 }

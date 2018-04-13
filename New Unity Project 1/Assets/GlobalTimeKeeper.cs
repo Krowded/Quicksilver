@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿/*
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ public class GlobalTimeKeeper : TimeInteractable
 	}
 	List<TimeState> states;
 
-	protected override void Start () {
+	protected override void Awake () {
 		GetComponent<Rigidbody> ().isKinematic = true;
 		GetComponent<Rigidbody> ().useGravity = false;
 		timeState = TimeState.Normal;
@@ -24,7 +25,7 @@ public class GlobalTimeKeeper : TimeInteractable
 		timeState = TimeState.Normal;
 	}
 
-	public override void SlowTime() {
+	public override void SlowTime(int ignoredValue) {
 		timeState = TimeState.Slow;
 	}
 
@@ -69,4 +70,4 @@ public class GlobalTimeKeeper : TimeInteractable
 		--currentStateIndex;
 	}
 }
-
+*/

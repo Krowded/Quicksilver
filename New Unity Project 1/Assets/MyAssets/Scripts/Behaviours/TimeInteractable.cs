@@ -9,15 +9,12 @@ public class TimeInteractable : MonoBehaviour {
 
 	private RewindDrawer rewindDrawer;
 
-
 	//Local space start values
 	public Vector3 StartVelocity;
 	public Vector3 StartAngularVelocity;
 
-	[Range(0,1)]
-	public float NormalSpeed = 1;
-	[Range(0,1)]
-	public float SlowSpeed = 0.2f;
+	private int slowFactor;
+	private int rewindSpeed;
 
 	private Transform tf;
 	private Rigidbody rb;
@@ -44,6 +41,22 @@ public class TimeInteractable : MonoBehaviour {
 			this.storedAngularVelocity = storedAngularVelocity;
 			this.timeState = ts; //Not necessary currently. But if we change things later?
 		}
+
+		public FrameState(FrameState previousState, FrameState nextState, float lerpRatio) 
+		{
+			this.position = Vector3.Lerp (previousState.position, nextState.position, lerpRatio);
+			this.rotation = Quaternion.Lerp (previousState.rotation, nextState.rotation, lerpRatio);
+			this.velocity = Mathf.Lerp (previousState.velocity, nextState.velocity, lerpRatio);
+			this.velocityDirection = Vector3.Slerp (previousState.velocityDirection, nextState.velocityDirection, lerpRatio);
+			this.angularVelocity = Mathf.Lerp (previousState.angularVelocity, nextState.angularVelocity, lerpRatio);
+			this.angularVelocityDirection = Vector3.Slerp(previousState.angularVelocityDirection, nextState.angularVelocityDirection, lerpRatio);
+
+			this.storedVelocity = Mathf.Lerp (previousState.storedVelocity, nextState.storedVelocity, lerpRatio);
+			this.storedAngularVelocity = Mathf.Lerp (previousState.storedAngularVelocity, nextState.storedAngularVelocity, lerpRatio);
+			this.timeState = nextState.timeState; //Can't interpolate very well, so just grabbing the next one since that is usually what determines the current state
+		}
+
+
 		public Vector3 position;
 		public Quaternion rotation;
 		public Vector3 velocityDirection;
@@ -56,11 +69,11 @@ public class TimeInteractable : MonoBehaviour {
 		public TimeState timeState;
 	}
 
-	private List<FrameState> states = new List<FrameState>();
+	private List<FrameState> states = new List<FrameState>(); //FIXME: Probably wanna preallocate this
 	protected int currentStateIndex = -1;
 
-
-	protected virtual void Start () {
+	//Need to do setup in awake, since we make a call to each TimeInteractable at start
+	protected virtual void Awake () {
 		tf = gameObject.transform;
 		rb = GetComponent<Rigidbody> ();
 
@@ -78,7 +91,7 @@ public class TimeInteractable : MonoBehaviour {
 			rewindDrawer.SetMesh(this.GetComponent<MeshFilter>().mesh);
 		}
 
-		SlowTime ();
+		ResetState ();
 	}
 
 	protected virtual void Update() {}
@@ -87,9 +100,10 @@ public class TimeInteractable : MonoBehaviour {
 		ResetState ();
 	}
 
-	public virtual void SlowTime() {
+	public virtual void SlowTime(int slowFactor) {
 		ResetState ();
-		StoreVelocity (SlowSpeed);
+		this.slowFactor = slowFactor;
+		StoreVelocity (1f/(float)slowFactor);
 		timeState = TimeState.Slow;
 	}
 
@@ -97,15 +111,16 @@ public class TimeInteractable : MonoBehaviour {
 		ResetState ();
 		StoreVelocity(0);
 
-		//FIXME: Possible bugs here. We change this directly both here and in interactor. Combine the effects somehow?
+		//FIXME: Possible bug source here. We change this directly both here and in interactor. Combine the effects somehow?
 		rb.isKinematic = true;
 		rb.useGravity = false;
 
 		timeState = TimeState.Stop;
 	}
 
-	public virtual void RewindTime() {
+	public virtual void RewindTime(int rewindSpeed = 1) {
 		timeState = TimeState.Rewind;
+		this.rewindSpeed = rewindSpeed;
 		DrawRewind ();
 	}
 
@@ -169,12 +184,14 @@ public class TimeInteractable : MonoBehaviour {
 		} else {
 			//Update state
 			if (timeState == TimeState.Slow) {
-				StoreRelativeVelocity (SlowSpeed);
+				StoreRelativeVelocity (1f / (float)slowFactor);
+				StoreState ();
 			} else if (timeState == TimeState.Stop) {
 				//Do nothing? Don't store state?
+			} else {
+				StoreState (slowFactor);
+				//StoreState ();
 			}
-
-			StoreState ();
 		}
 	}
 
@@ -186,9 +203,27 @@ public class TimeInteractable : MonoBehaviour {
 		}
 	}
 
-	private void StoreState() {
-		++currentStateIndex;
+	private void StoreState(int numberOfStates = 1) {
+		UnityEngine.Assertions.Assert.IsTrue (numberOfStates > 0);
+
+
 		FrameState currentState = new FrameState (tf, rb, timeState, storedVelocity, storedAngularVelocity);
+		if (currentStateIndex >= 0 && numberOfStates > 1) {
+			//Interpolate states between previous and now
+			FrameState previousState = states [currentStateIndex];
+			for (int i = 1; i < numberOfStates; ++i) {
+				++currentStateIndex;
+				float ratio = (float)i/(float)numberOfStates;
+				FrameState midState = new FrameState (previousState, currentState, ratio);
+				if (states.Count <= currentStateIndex) { 
+					states.Add (midState);
+				} else {
+					states [currentStateIndex] = midState;
+				}
+			}
+		}
+
+		++currentStateIndex;
 		if (states.Count <= currentStateIndex) { 
 			states.Add (currentState);
 		} else {
@@ -197,14 +232,17 @@ public class TimeInteractable : MonoBehaviour {
 	}
 
 	private void RestoreLastState() {
-		tf.position = states [currentStateIndex].position;
-		tf.rotation = states [currentStateIndex].rotation;
-		rb.velocity = states [currentStateIndex].velocity * states [currentStateIndex].velocityDirection;
-		rb.angularVelocity = states [currentStateIndex].angularVelocity * states [currentStateIndex].angularVelocityDirection;
-		storedVelocity = states [currentStateIndex].storedVelocity;
-		storedAngularVelocity = states [currentStateIndex].storedAngularVelocity;
-		//No timeState restoration, since we are in rewind mode. Set at end of rewind.
-		--currentStateIndex;
+		if (currentStateIndex > 0) {
+			currentStateIndex = Mathf.Max (0, currentStateIndex - rewindSpeed);
+
+			tf.position = states [currentStateIndex].position;
+			tf.rotation = states [currentStateIndex].rotation;
+			rb.velocity = states [currentStateIndex].velocity * states [currentStateIndex].velocityDirection;
+			rb.angularVelocity = states [currentStateIndex].angularVelocity * states [currentStateIndex].angularVelocityDirection;
+			storedVelocity = states [currentStateIndex].storedVelocity;
+			storedAngularVelocity = states [currentStateIndex].storedAngularVelocity;
+			//No timeState restoration, since we are in rewind mode. Set at end of rewind.
+		}
 	}
 		
 	private void ResetState () {
