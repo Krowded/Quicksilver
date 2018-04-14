@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class Loader : MonoBehaviour {
 
 	private string[] scenes = { 
-		"level1", 
+		"level3", 
 		"level2" };
 	private int sceneIndex = 0;
 
@@ -15,7 +15,6 @@ public class Loader : MonoBehaviour {
 	}
 
 	void Update () {
-		Debug.Log (SceneManager.sceneCount);
 		if (SceneManager.sceneCount < 2) {
 			if (sceneIndex >= scenes.Length) {
 				Application.Quit ();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class DynamicTimeInteractable : TimeInteractable {
 	//Local space start values
 	public Vector3 StartVelocity;
@@ -64,6 +65,10 @@ public class DynamicTimeInteractable : TimeInteractable {
 	protected override void Awake () {
 		tf = gameObject.transform;
 		rb = gameObject.GetComponent<Rigidbody> ();
+
+		if (rb == null) {
+			throw new MissingReferenceException ("No rigidbody found");
+		}
 
 		baseKinematicState = rb.isKinematic;
 		baseGravityState = rb.useGravity;
@@ -154,7 +159,6 @@ public class DynamicTimeInteractable : TimeInteractable {
 				//Do nothing? Don't store state?
 			} else {
 				StoreState (slowFactor);
-				//StoreState ();
 			}
 		}
 	}
