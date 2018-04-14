@@ -54,9 +54,11 @@
      <Compile Include="Assets\EnergyWarning.cs" />
      <Compile Include="Assets\GlobalTimeKeeper.cs" />
      <Compile Include="Assets\InteractionController.cs" />
+     <Compile Include="Assets\ITimeState.cs" />
      <Compile Include="Assets\LevelEndingMethods.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\CharacterKiller.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\DeathScript.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Behaviours\DynamicTimeInteractable.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\Interactable.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\KillOnCollision.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\LoaderAnimationScript.cs" />
@@ -64,7 +66,6 @@
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\Movable.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\RedirectProjectile.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\Rotatable.cs" />
-     <Compile Include="Assets\MyAssets\Scripts\Behaviours\TimeInteractable.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Events\LevelEvent.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Events\LevelEventHandler.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Events\OnHierarchyEmpty.cs" />
@@ -79,7 +80,10 @@
      <Compile Include="Assets\MyAssets\Scripts\Player Specifics\InteractorScript.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Player Specifics\OscillatingEnergyBar.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Player Specifics\RewindDrawer.cs" />
+     <Compile Include="Assets\OnHierarchyDead.cs" />
      <Compile Include="Assets\Prototype Materials\ShowcaseMovement.cs" />
+     <Compile Include="Assets\StaticTimeInteractable.cs" />
+     <Compile Include="Assets\TimeInteractable.cs" />
      <Compile Include="Assets\TimeState.cs" />
      <Compile Include="Assets\Unity Technologies\Recorder\Extensions\FCIntegration\BaseFCRecorderSettings.cs" />
      <Compile Include="Assets\Unity Technologies\Recorder\Extensions\FCIntegration\EXR\EXRRecorder.cs" />
@@ -150,6 +154,7 @@
      <Compile Include="Assets\Unity Technologies\Recorder\Framework\Inputs\ScreenCapture\Engine\ScreenCaptureInputSettings.cs" />
      <Compile Include="Assets\Unity Technologies\Recorder\Framework\Recorders\ImageRecorder\Engine\ImageRecorder.cs" />
      <Compile Include="Assets\Unity Technologies\Recorder\Framework\Recorders\ImageRecorder\Engine\ImageRecorderSettings.cs" />
+     <Compile Include="Assets\VisibleRewindTimeInteractable.cs" />
      <None Include="Assets\MyAssets\Shaders\DigitalShader.cginc" />
      <None Include="Assets\MyAssets\Shaders\DisintegratingCelShader.shader" />
      <None Include="Assets\Unity Technologies\Recorder\Extensions\UTJ\License.txt" />

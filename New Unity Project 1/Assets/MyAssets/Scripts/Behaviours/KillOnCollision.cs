@@ -7,9 +7,9 @@ public class KillOnCollision : MonoBehaviour {
 		Collider col = collision.collider;
 		Debug.Log ("Collision detected between " + gameObject.name + " and " + col.name);
 
-		if (col.gameObject.CompareTag("Character")) {
-			col.gameObject.GetComponent<DeathScript>().Kill();
-			//GameObject.Destroy (gameObject);
+		DeathScript ds = col.gameObject.GetComponent<DeathScript> ();
+		if (ds != null) {
+			ds.Kill ();
 		}
 	}
 }

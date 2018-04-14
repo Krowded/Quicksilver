@@ -20,7 +20,6 @@ public class LevelEndingMethods : MonoBehaviour {
 		if (tc.timeState == TimeState.Rewind || tc.timeState == TimeState.Stop) {
 			return;
 		}
-		Debug.Log ("You Lose!");
 
 		tc.StopTime (gameObject.transform);
 		StartCoroutine(WaitThenRewindToBeginning(gameObject.transform, timeInSeconds: 0.3f));
@@ -30,5 +29,4 @@ public class LevelEndingMethods : MonoBehaviour {
 		tc.StartTime (hierarchy);
 		tc.RewindTime (hierarchy, customRewindSpeed: 20);
 	}
-
 }

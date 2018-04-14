@@ -39,7 +39,7 @@ public class RewindDrawer : AfterImageDrawer {
 		base.StartDrawing ();
 	}
 
-	public void UpdatePositions(Transform baseTransform, List<TimeInteractable.FrameState> states, int size = -1) {
+	public void UpdatePositions(Transform baseTransform, List<DynamicTimeInteractable.FrameState> states, int size = -1) {
 		if (size < -1) {
 			totalPoints = states.Count;
 		} else {
