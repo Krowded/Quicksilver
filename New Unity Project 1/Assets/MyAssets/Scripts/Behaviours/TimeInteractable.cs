@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TimeInteractable : MonoBehaviour {
-	public TimeState timeState = TimeState.Slow;
+public abstract class TimeInteractable : MonoBehaviour {
+	public TimeState timeState = TimeState.Normal;
 
 	protected int slowFactor;
 	protected int rewindSpeed;
 	protected int currentStateIndex = -1;
 
 	//Need to do setup in awake, since we make a call to each TimeInteractable at start
-	protected virtual void Awake () {}
+	protected virtual void Awake () {
+		ResetState ();
+	}
 
 	protected virtual void FixedUpdate() {
 		if (timeState == TimeState.Rewind) {
@@ -25,26 +27,50 @@ public class TimeInteractable : MonoBehaviour {
 		}
 	}
 
-	public virtual void StartTime() {
-		timeState = TimeState.Normal;
+	public void StartTime() {
+		ResetState ();
+		ProtectedStartTime ();
 	}
 
-	public virtual void SlowTime(int slowFactor) {
+	protected virtual void ProtectedStartTime() {}
+
+	public void SlowTime(int slowFactor) {
+		ResetState ();
 		this.slowFactor = slowFactor;
 		timeState = TimeState.Slow;
+		ProtectedSlowTime ();
 	}
 
-	public virtual void StopTime() {
+	protected virtual void ProtectedSlowTime () {}
+
+	public void StopTime() {
+		ResetState ();
 		timeState = TimeState.Stop;
+		ProtectedStopTime ();
 	}
 
-	public virtual void RewindTime(int rewindSpeed = 1) {
+	protected virtual void ProtectedStopTime () {}
+
+	public void RewindTime(int rewindSpeed = 1) {
 		this.rewindSpeed = rewindSpeed;
 		timeState = TimeState.Rewind;
+		ProtectedRewindTime ();
 	}
 
-	public virtual void StopRewind() {
+	protected virtual void ProtectedRewindTime () {}
+
+	public void StopRewind() {
 		timeState = TimeState.Normal;
+		ProtectedStopRewind ();
 	}
+
+	protected virtual void ProtectedStopRewind() {}
+
+	protected void ResetState () {
+		timeState = TimeState.Normal;
+		ProtectedResetState ();
+	}
+
+	protected virtual void ProtectedResetState () {}
 }
 

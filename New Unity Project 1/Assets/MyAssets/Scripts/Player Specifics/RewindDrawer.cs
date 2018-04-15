@@ -39,7 +39,7 @@ public class RewindDrawer : AfterImageDrawer {
 		base.StartDrawing ();
 	}
 
-	public void UpdatePositions(Transform baseTransform, List<DynamicTimeInteractable.FrameState> states, int size = -1) {
+	public void UpdatePositions(Transform baseTransform, List<ITimeState> states, int size = -1) {
 		if (size < -1) {
 			totalPoints = states.Count;
 		} else {
@@ -66,9 +66,11 @@ public class RewindDrawer : AfterImageDrawer {
 				sublistStartIndex = positionSublist * 1023;
 			}
 
-			if (i == 0 || Vector3.Magnitude(previousPos - states[i].position) > DistanceBetweenDraws) {
-				tempTransform.position = states[i].position;
-				tempTransform.rotation = states[i].rotation;
+			Debug.Assert (states [i] is PhysicsTimeInteractable.PhysicsState);
+			PhysicsTimeInteractable.PhysicsState state = ((PhysicsTimeInteractable.PhysicsState)states [i]);
+			if (i == 0 || Vector3.Magnitude(previousPos - state.position) > DistanceBetweenDraws) {
+				tempTransform.position = state.position;
+				tempTransform.rotation = state.rotation;
 				positions[positionSublist][count - sublistStartIndex] = tempTransform.localToWorldMatrix;
 				usedIndices.Add (i);
 				++count;

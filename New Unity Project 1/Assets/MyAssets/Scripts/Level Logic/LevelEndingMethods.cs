@@ -24,6 +24,7 @@ public class LevelEndingMethods : MonoBehaviour {
 		tc.StopTime (gameObject.transform);
 		StartCoroutine(WaitThenRewindToBeginning(gameObject.transform, timeInSeconds: 0.3f));
 	}
+
 	private IEnumerator WaitThenRewindToBeginning(Transform hierarchy, float timeInSeconds) {
 		yield return new WaitForSecondsRealtime (timeInSeconds);
 		tc.StartTime (hierarchy);

@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(RewindDrawer))]
-public class VisibleRewindTimeInteractable : DynamicTimeInteractable
+public class VisibleRewindTimeInteractable : PhysicsTimeInteractable
 {
 	private RewindDrawer rewindDrawer;
 
@@ -18,21 +19,21 @@ public class VisibleRewindTimeInteractable : DynamicTimeInteractable
 		}
 	}
 
-	public override void RewindTime (int rewindSpeed = 1)
+	protected override void ProtectedRewindTime ()
 	{
-		base.RewindTime (rewindSpeed);
+		base.ProtectedRewindTime ();
 		DrawRewind ();
 	}
 
-	public override void StopRewind ()
+	protected override void ProtectedStopRewind ()
 	{
-		base.StopRewind ();
+		base.ProtectedStopRewind ();
 		StopDrawingRewind ();
 	}
 
-	protected override void ResetState ()
+	protected override void ProtectedResetState ()
 	{
-		base.ResetState ();
+		base.ProtectedResetState ();
 		StopDrawingRewind ();
 	}
 
