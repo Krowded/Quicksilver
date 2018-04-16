@@ -20,7 +20,7 @@ public class TimeController : MonoBehaviour {
 	void Start() {
 		input = GetComponent<InputHandler> ();
 		baseGravity = Physics.gravity;
-		SlowTime (Hierarchy); //Start slow
+		SlowTime (); //Start slow
 	}
 
 	void SetState() {
@@ -34,19 +34,19 @@ public class TimeController : MonoBehaviour {
 	void Update () {
 		if (timeState == TimeState.Rewind) {
 			if (input.rewindKeyDown) {
-				StopRewind (Hierarchy);
+				StopRewind ();
 			}
 		} else {
 			if (input.timeKeyDown) {
 				if (timeState == TimeState.Normal) {
-					SlowTime (Hierarchy);
+					SlowTime ();
 				} else {
-					StartTime (Hierarchy);
+					StartTime ();
 				}
-					
+
 				SetState ();
 			} else if (input.rewindKeyDown) {
-				RewindTime (Hierarchy);
+				RewindTime ();
 			}
 		}
 	}
@@ -64,22 +64,13 @@ public class TimeController : MonoBehaviour {
 				break;
 			case TimeState.Rewind:
 				if (timeCount == 0) {
-					StopRewind (Hierarchy);
+					StopRewind ();
 				}
 				timeCount = Mathf.Max (0, timeCount - currentRewindSpeed);
 				break;
 			default:
 				throw new MissingComponentException ("Unknown TimeState: " + timeState);
 		}
-	}
-
-	//Search through hierarchy (probably better to have a list, but it'll do for now)
-	public void StartTime(Transform hierarchy) {
-		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
-			timeInteractable.StartTime ();
-		});
-
-		timeState = TimeState.Normal;
 	}
 
 	public void StartTime() {
@@ -100,6 +91,51 @@ public class TimeController : MonoBehaviour {
 		timeState = TimeState.Stop;
 	}
 
+	public void SlowTime(int customSlowFactor = -1) {
+		if (customSlowFactor == -1) {
+			currentSlowFactor = SlowTimeFactor;
+		} else {
+			currentSlowFactor = customSlowFactor;
+		}
+
+		ApplyToEveryInstance ((timeInteractable) => { timeInteractable.SlowTime (currentSlowFactor); });
+		timeState = TimeState.Slow;
+	}
+
+	public void RewindTime(int customRewindSpeed = -1) {
+		if (customRewindSpeed == -1) {
+			currentRewindSpeed = RewindSpeed;
+		} else {
+			currentRewindSpeed = customRewindSpeed;
+		}
+
+		ApplyToEveryInstance((timeInteractable) => { timeInteractable.RewindTime (currentRewindSpeed); });
+		timeState = TimeState.Rewind;
+	}
+
+	public void StopRewind() {
+		ApplyToEveryInstance ((timeInteractable) => { timeInteractable.StopRewind (); });
+		SlowTime (); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate. (Could possibly be stop instead)
+	}
+
+	delegate void OnEachTimeFunction(TimeInteractable timeInteractable);
+	void ApplyToEveryInstance(OnEachTimeFunction f) {
+		foreach (TimeInteractable ti in TimeInteractable.AllInstances) {
+			f (ti);
+		}
+	}
+
+
+
+
+	public void StartTime(Transform hierarchy) {
+		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
+			timeInteractable.StartTime ();
+		});
+
+		timeState = TimeState.Normal;
+	}
+
 	public void SlowTime(Transform hierarchy, int customSlowFactor = -1) {
 		if (customSlowFactor == -1) {
 			currentSlowFactor = SlowTimeFactor;
@@ -114,15 +150,12 @@ public class TimeController : MonoBehaviour {
 		timeState = TimeState.Slow;
 	}
 
-	public void SlowTime(int customSlowFactor = -1) {
-		if (customSlowFactor == -1) {
-			currentSlowFactor = SlowTimeFactor;
-		} else {
-			currentSlowFactor = customSlowFactor;
-		}
+	public void StopRewind(Transform hierarchy) {
+		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
+			timeInteractable.StopRewind ();
+		});
 
-		ApplyToEveryInstance ((timeInteractable) => { timeInteractable.SlowTime (currentSlowFactor); });
-		timeState = TimeState.Slow;
+		SlowTime (hierarchy); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate
 	}
 
 	public void RewindTime(Transform hierarchy, int customRewindSpeed = -1) {
@@ -138,30 +171,6 @@ public class TimeController : MonoBehaviour {
 
 		timeState = TimeState.Rewind;
 	}
-	public void RewindTime(int customRewindSpeed = -1) {
-		if (customRewindSpeed == -1) {
-			currentRewindSpeed = RewindSpeed;
-		} else {
-			currentRewindSpeed = customRewindSpeed;
-		}
-
-		ApplyToEveryInstance((timeInteractable) => { timeInteractable.RewindTime (currentRewindSpeed); });
-		timeState = TimeState.Rewind;
-	}
-
-
-	public void StopRewind(Transform hierarchy) {
-		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
-			timeInteractable.StopRewind ();
-		});
-
-		SlowTime (hierarchy); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate
-	}
-
-	public void StopRewind() {
-		ApplyToEveryInstance ((timeInteractable) => { timeInteractable.StopRewind (); });
-		SlowTime (); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate. (Could possibly be stop instead)
-	}
 
 	delegate void OnEachFunction(Transform tf);
 	void TraverseAndApplyToHierarchy(Transform hierarchy, OnEachFunction f) {
@@ -172,7 +181,6 @@ public class TimeController : MonoBehaviour {
 		}
 	}
 
-	delegate void OnEachTimeFunction(TimeInteractable timeInteractable);
 	void TraverseAndApplyToTimeHierarchy(Transform hierarchy, OnEachTimeFunction f) {
 		TraverseAndApplyToHierarchy (hierarchy, (transform) => { 
 			TimeInteractable timeInteractable = transform.GetComponent<TimeInteractable> ();
@@ -180,12 +188,5 @@ public class TimeController : MonoBehaviour {
 				f(timeInteractable);
 			}
 		});
-	}
-
-
-	void ApplyToEveryInstance(OnEachTimeFunction f) {
-		foreach (TimeInteractable ti in TimeInteractable.AllInstances) {
-			f (ti);
-		}
 	}
 }

@@ -140,18 +140,14 @@ public class PhysicsTimeInteractable : DynamicTimeInteractable
 	}
 
 	protected override void RestoreLastState() {
-		if (currentStateIndex > 0) {
-			currentStateIndex = Mathf.Max (0, currentStateIndex - rewindSpeed);
-
-			PhysicsState lastState = (PhysicsState)states [currentStateIndex];
-			tf.position = lastState.position;
-			tf.rotation = lastState.rotation;
-			rb.velocity = lastState.velocity * lastState.velocityDirection;
-			rb.angularVelocity = lastState.angularVelocity * lastState.angularVelocityDirection;
-			storedVelocity = lastState.storedVelocity;
-			storedAngularVelocity = lastState.storedAngularVelocity;
-			//No timeState restoration, since we are in rewind mode. Set at end of rewind.
-		}
+		PhysicsState lastState = (PhysicsState)states [currentStateIndex];
+		tf.position = lastState.position;
+		tf.rotation = lastState.rotation;
+		rb.velocity = lastState.velocity * lastState.velocityDirection;
+		rb.angularVelocity = lastState.angularVelocity * lastState.angularVelocityDirection;
+		storedVelocity = lastState.storedVelocity;
+		storedAngularVelocity = lastState.storedAngularVelocity;
+		//No timeState restoration, since we are in rewind mode. Set at end of rewind.
 	}
 
 	protected override void ProtectedResetState() {

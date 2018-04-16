@@ -7,11 +7,8 @@ public abstract class DynamicTimeInteractable : TimeInteractable {
 	protected int currentStateIndex = -1;
 
 	protected override void RewindFixedUpdate() {
-		if (currentStateIndex >= 0) {
-			RestoreLastState ();
-		} else {
-			throw new IndexOutOfRangeException ("Overshot rewind. Current state index: " + currentStateIndex);
-		}
+		currentStateIndex = Mathf.Max (0, currentStateIndex - rewindSpeed);
+		RestoreLastState ();
 	}
 	protected override void SlowFixedUpdate() {
 		StoreStates (1);

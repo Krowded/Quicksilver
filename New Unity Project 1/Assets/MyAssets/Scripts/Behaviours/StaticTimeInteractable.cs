@@ -7,7 +7,7 @@ public abstract class StaticTimeInteractable : TimeInteractable {
 	private List<int> timeStamps = new List<int>();
 	private int stateIndex = -1;
 
-	protected override void RewindFixedUpdate() {
+	protected override sealed void RewindFixedUpdate() {
 		if (stateIndex > -1 && instanceTime <= timeStamps [stateIndex]) {
 			RestoreState ();
 		}
