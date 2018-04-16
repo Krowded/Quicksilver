@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(InputHandler))]
@@ -16,7 +15,7 @@ public class TimeController : MonoBehaviour {
 
 	private Vector3 baseGravity;
 	public TimeState timeState;
-	private int frameCount = 0; //Need to keep track of frame count so we don't overshoot on rewind
+	private int timeCount = 0; //Need to keep track of time so we don't overshoot on rewind. Perhaps get it from somewhere else?
 
 	void Start() {
 		input = GetComponent<InputHandler> ();
@@ -53,15 +52,24 @@ public class TimeController : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (timeState == TimeState.Rewind) {
-			if (frameCount == 0) {
-				StopRewind (Hierarchy);
-			}
-			frameCount = Mathf.Max(0, frameCount-currentRewindSpeed);
-		} else if (timeState == TimeState.Normal) {
-			frameCount += currentSlowFactor;
-		} else {
-			++frameCount;
+		switch (timeState) {
+			case TimeState.Normal:
+				timeCount += currentSlowFactor;
+				break;
+			case TimeState.Slow:
+				++timeCount;
+				break;
+			case TimeState.Stop:
+				//Do nothing
+				break;
+			case TimeState.Rewind:
+				if (timeCount == 0) {
+					StopRewind (Hierarchy);
+				}
+				timeCount = Mathf.Max (0, timeCount - currentRewindSpeed);
+				break;
+			default:
+				throw new MissingComponentException ("Unknown TimeState: " + timeState);
 		}
 	}
 
@@ -74,11 +82,21 @@ public class TimeController : MonoBehaviour {
 		timeState = TimeState.Normal;
 	}
 
+	public void StartTime() {
+		ApplyToEveryInstance((timeInteractable) => { timeInteractable.StartTime ();});
+		timeState = TimeState.Normal;
+	}
+
 	public void StopTime(Transform hierarchy) {
 		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
 			timeInteractable.StopTime ();
 		});
 
+		timeState = TimeState.Stop;
+	}
+
+	public void StopTime() {
+		ApplyToEveryInstance((timeInteractable) => { timeInteractable.StopTime (); });
 		timeState = TimeState.Stop;
 	}
 
@@ -96,6 +114,17 @@ public class TimeController : MonoBehaviour {
 		timeState = TimeState.Slow;
 	}
 
+	public void SlowTime(int customSlowFactor = -1) {
+		if (customSlowFactor == -1) {
+			currentSlowFactor = SlowTimeFactor;
+		} else {
+			currentSlowFactor = customSlowFactor;
+		}
+
+		ApplyToEveryInstance ((timeInteractable) => { timeInteractable.SlowTime (currentSlowFactor); });
+		timeState = TimeState.Slow;
+	}
+
 	public void RewindTime(Transform hierarchy, int customRewindSpeed = -1) {
 		if (customRewindSpeed == -1) {
 			currentRewindSpeed = RewindSpeed;
@@ -109,6 +138,17 @@ public class TimeController : MonoBehaviour {
 
 		timeState = TimeState.Rewind;
 	}
+	public void RewindTime(int customRewindSpeed = -1) {
+		if (customRewindSpeed == -1) {
+			currentRewindSpeed = RewindSpeed;
+		} else {
+			currentRewindSpeed = customRewindSpeed;
+		}
+
+		ApplyToEveryInstance((timeInteractable) => { timeInteractable.RewindTime (currentRewindSpeed); });
+		timeState = TimeState.Rewind;
+	}
+
 
 	public void StopRewind(Transform hierarchy) {
 		TraverseAndApplyToTimeHierarchy (hierarchy, (timeInteractable) => {
@@ -118,12 +158,17 @@ public class TimeController : MonoBehaviour {
 		SlowTime (hierarchy); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate
 	}
 
+	public void StopRewind() {
+		ApplyToEveryInstance ((timeInteractable) => { timeInteractable.StopRewind (); });
+		SlowTime (); //Feels better if the game starts back up at slow speed, and also solves problem of not knowing our timestate. (Could possibly be stop instead)
+	}
+
 	delegate void OnEachFunction(Transform tf);
 	void TraverseAndApplyToHierarchy(Transform hierarchy, OnEachFunction f) {
 		f (hierarchy);
 
 		foreach (Transform child in hierarchy) {
-			TraverseAndApplyToHierarchy(child, f);
+			TraverseAndApplyToHierarchy (child, f);
 		}
 	}
 
@@ -135,5 +180,12 @@ public class TimeController : MonoBehaviour {
 				f(timeInteractable);
 			}
 		});
+	}
+
+
+	void ApplyToEveryInstance(OnEachTimeFunction f) {
+		foreach (TimeInteractable ti in TimeInteractable.AllInstances) {
+			f (ti);
+		}
 	}
 }

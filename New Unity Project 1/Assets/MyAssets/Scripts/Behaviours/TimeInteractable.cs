@@ -1,13 +1,35 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public abstract class TimeInteractable : MonoBehaviour {
+	static public List<TimeInteractable> AllInstances;
+	static TimeInteractable() {
+		AllInstances = new List<TimeInteractable> (); //Maybe preallocate?
+	}
+	private void OnEnable() {
+		AllInstances.Add (this);
+	}
+	private void OnDisable() {
+		AllInstances.Remove(this);
+	}
+
+	//ALlowing to take item out for individual manipulation
+	public void Take() {
+		AllInstances.Remove(this);
+	}
+	public void Return() {
+		AllInstances.Add(this);
+	}
+
+
+	//Actual class starts here
 	public TimeState timeState = TimeState.Normal;
 
 	protected int slowFactor;
 	protected int rewindSpeed;
-	protected int globalTimeStamp = -1;
+	protected int instanceTime = -1;
 
 	//Need to do setup in awake, since we make a call to each TimeInteractable at start
 	protected virtual void Awake () {
@@ -17,22 +39,22 @@ public abstract class TimeInteractable : MonoBehaviour {
 	private void FixedUpdate() {		
 		switch (timeState) {
 			case TimeState.Normal:
-				globalTimeStamp += slowFactor;
+				instanceTime += slowFactor;
 				NormalFixedUpdate ();
 				break;
 			case TimeState.Slow:
-				++globalTimeStamp;
+				++instanceTime;
 				SlowFixedUpdate ();
 				break;
 			case TimeState.Stop:
 				StopFixedUpdate ();
 				break;
 			case TimeState.Rewind:
-				globalTimeStamp = Mathf.Max (0, globalTimeStamp - rewindSpeed);
+				instanceTime = Mathf.Max (0, instanceTime - rewindSpeed);
 				RewindFixedUpdate ();
 				break;
 			default:
-				throw new NotImplementedException ("Unknown TimeState: " + timeState);
+				throw new NotImplementedException ("Haven't implemented TimeState: " + timeState);
 		}
 	}
 

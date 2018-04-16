@@ -8,7 +8,7 @@ public abstract class StaticTimeInteractable : TimeInteractable {
 	private int stateIndex = -1;
 
 	protected override void RewindFixedUpdate() {
-		if (stateIndex > -1 && globalTimeStamp <= timeStamps [stateIndex]) {
+		if (stateIndex > -1 && instanceTime <= timeStamps [stateIndex]) {
 			RestoreState ();
 		}
 	}
@@ -18,10 +18,10 @@ public abstract class StaticTimeInteractable : TimeInteractable {
 		ITimeState temp = GetState ();
 		if (states.Count <= stateIndex) {
 			states.Add (temp);
-			timeStamps.Add (globalTimeStamp);
+			timeStamps.Add (instanceTime);
 		} else {
 			states [stateIndex] = temp;
-			timeStamps [stateIndex] = globalTimeStamp;
+			timeStamps [stateIndex] = instanceTime;
 		}
 	}
 
