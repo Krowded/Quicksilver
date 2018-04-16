@@ -13,14 +13,13 @@ public class InteractionController : MonoBehaviour
 		interactor = GetComponent<InteractorScript> ();
 	}
 
-	// Update is called once per frame
 	void Update ()
 	{
 		if (input.pickKeyDown) {
 			interactor.PickUpOrDrop ();
 		} else if (input.resetKeyDown) {
 			interactor.Reset ();
-			timeController.RewindTime (timeController.Hierarchy, RewindSpeedOnCancel);
+			timeController.RewindTime (RewindSpeedOnCancel);
 		}
 	}
 }

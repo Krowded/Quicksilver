@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class Loader : MonoBehaviour {
 
 	private string[] scenes = { 
-		"level3", 
+		"level1", 
 		"level2" };
 	private int sceneIndex = 0;
 

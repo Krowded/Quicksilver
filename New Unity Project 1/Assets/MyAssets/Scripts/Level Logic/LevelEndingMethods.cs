@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(TimeController))]
 public class LevelEndingMethods : MonoBehaviour {
@@ -13,7 +14,9 @@ public class LevelEndingMethods : MonoBehaviour {
 
 	public void Win() {
 		Debug.Log ("You win!");
-		Destroy (this); //FIXME: Obviously don't keep this...
+		if (SceneManager.sceneCount > 1) {
+			SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(1));
+		}
 	}
 		
 	public void Lose() {

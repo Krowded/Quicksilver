@@ -6,8 +6,10 @@ using System.Collections.Generic;
 public class PhysicsTimeInteractable : DynamicTimeInteractable
 {
 	//Local space start values
-	public Vector3 StartVelocity;
-	public Vector3 StartAngularVelocity;
+	public float StartVelocity;
+	public Vector3 StartVelocityDirection;
+	public float StartAngularVelocity;
+	public Vector3 StartAngularVelocityDirection;
 
 	protected Transform tf;
 	protected Rigidbody rb;
@@ -51,8 +53,11 @@ public class PhysicsTimeInteractable : DynamicTimeInteractable
 		baseKinematicState = rb.isKinematic;
 		baseGravityState = rb.useGravity;
 
-		rb.velocity = StartVelocity;
-		rb.angularVelocity = StartAngularVelocity;
+		StartVelocityDirection = tf.TransformDirection (StartVelocityDirection.normalized);
+		StartAngularVelocityDirection = tf.TransformDirection (StartAngularVelocityDirection.normalized);
+
+		rb.velocity = StartVelocity*StartVelocityDirection;
+		rb.angularVelocity = StartAngularVelocity*StartAngularVelocityDirection;
 
 		previousVelocity = rb.velocity.magnitude;
 		previousAngularVelocity = rb.angularVelocity.magnitude;
