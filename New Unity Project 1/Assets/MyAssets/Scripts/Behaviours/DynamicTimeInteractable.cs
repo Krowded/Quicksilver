@@ -4,33 +4,20 @@ using UnityEngine;
 
 public abstract class DynamicTimeInteractable : TimeInteractable {
 	protected List<ITimeState> states = new List<ITimeState>(); //FIXME: Probably wanna preallocate this
+	protected int currentStateIndex = -1;
 
-	protected override sealed void FixedUpdate() {
-		switch (timeState) {
-			case TimeState.Rewind:
-				RewindFixedUpdate ();
-				break;
-			case TimeState.Slow:
-				StoreStates ();
-				break;
-			case TimeState.Stop:
-				//Do nothing
-				break;
-			case TimeState.Normal:
-				StoreStates (slowFactor);
-				break;
-			default:
-				throw new NotImplementedException ("Unknown TimeState: " + timeState);
-				//break;
-		}
-	}
-
-	private void RewindFixedUpdate() {
+	protected override void RewindFixedUpdate() {
 		if (currentStateIndex >= 0) {
 			RestoreLastState ();
 		} else {
 			throw new IndexOutOfRangeException ("Overshot rewind. Current state index: " + currentStateIndex);
 		}
+	}
+	protected override void SlowFixedUpdate() {
+		StoreStates (1);
+	}
+	protected override void NormalFixedUpdate() {
+		StoreStates (slowFactor);
 	}
 
 	private void StoreStates(int numberOfStates = 1) {
@@ -62,7 +49,7 @@ public abstract class DynamicTimeInteractable : TimeInteractable {
 		
 	protected abstract ITimeState GetCurrentState ();
 
-	protected abstract ITimeState GetInterpolatedState (ITimeState previousState, ITimeState currentState, float ratio);
+	protected abstract ITimeState GetInterpolatedState (ITimeState previousState, ITimeState nextState, float ratio);
 
 	protected abstract void RestoreLastState ();
 }

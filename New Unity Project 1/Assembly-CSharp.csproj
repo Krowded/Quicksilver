@@ -60,6 +60,7 @@
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\LoaderAnimationScript.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\MatchPositionToChild.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\Movable.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Behaviours\PhysicsTimeInteractable.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\RedirectProjectile.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\Rotatable.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Behaviours\StaticTimeInteractable.cs" />
@@ -71,11 +72,13 @@
      <Compile Include="Assets\MyAssets\Scripts\Events\OnHierarchyDead.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Events\OnHierarchyEmpty.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Events\OnOutOfBounds.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Events\OnTimeOut.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Level Logic\GlobalTimeKeeper.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Level Logic\InputHandler.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Level Logic\LevelEndingMethods.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Level Logic\Loader.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Level Logic\TimeController.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Level Logic\Timer.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Lib\ColorManipulation.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Player Specifics\AfterImageDrawer.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Player Specifics\EnergyBar.cs" />
@@ -85,7 +88,6 @@
      <Compile Include="Assets\MyAssets\Scripts\Player Specifics\InteractorScript.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Player Specifics\OscillatingEnergyBar.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Player Specifics\RewindDrawer.cs" />
-     <Compile Include="Assets\PhysicsTimeInteractable.cs" />
      <Compile Include="Assets\Prototype Materials\ShowcaseMovement.cs" />
      <Compile Include="Assets\Unity Technologies\Recorder\Extensions\FCIntegration\BaseFCRecorderSettings.cs" />
      <Compile Include="Assets\Unity Technologies\Recorder\Extensions\FCIntegration\EXR\EXRRecorder.cs" />

@@ -13,12 +13,9 @@ public class TimeController : MonoBehaviour {
 	private int currentRewindSpeed;
 
 	private InputHandler input;
-	//private GlobalTimeKeeper timeKeeper;
 
 	private Vector3 baseGravity;
 	public TimeState timeState;
-	//private bool timeIsNormal = false;
-	//private bool rewinding = false;
 	private int frameCount = 0; //Need to keep track of frame count so we don't overshoot on rewind
 
 	void Start() {

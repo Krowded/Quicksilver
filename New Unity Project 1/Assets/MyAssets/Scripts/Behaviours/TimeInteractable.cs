@@ -1,31 +1,45 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public abstract class TimeInteractable : MonoBehaviour {
 	public TimeState timeState = TimeState.Normal;
 
 	protected int slowFactor;
 	protected int rewindSpeed;
-	protected int currentStateIndex = -1;
+	protected int globalTimeStamp = -1;
 
 	//Need to do setup in awake, since we make a call to each TimeInteractable at start
 	protected virtual void Awake () {
 		ResetState ();
 	}
 
-	protected virtual void FixedUpdate() {
-		if (timeState == TimeState.Rewind) {
-			currentStateIndex = Mathf.Max (0, currentStateIndex - rewindSpeed);
-		} else {
-			if (timeState == TimeState.Slow) {
-				++currentStateIndex;
-			} else if (timeState == TimeState.Stop) {
-				//Do nothing (not storing state)
-			} else {
-				currentStateIndex += slowFactor;
-			}
+	private void FixedUpdate() {		
+		switch (timeState) {
+			case TimeState.Normal:
+				globalTimeStamp += slowFactor;
+				NormalFixedUpdate ();
+				break;
+			case TimeState.Slow:
+				++globalTimeStamp;
+				SlowFixedUpdate ();
+				break;
+			case TimeState.Stop:
+				StopFixedUpdate ();
+				break;
+			case TimeState.Rewind:
+				globalTimeStamp = Mathf.Max (0, globalTimeStamp - rewindSpeed);
+				RewindFixedUpdate ();
+				break;
+			default:
+				throw new NotImplementedException ("Unknown TimeState: " + timeState);
 		}
 	}
+
+	protected virtual void NormalFixedUpdate() {}
+	protected virtual void SlowFixedUpdate() {}
+	protected virtual void StopFixedUpdate() {}
+	protected virtual void RewindFixedUpdate() {}
 
 	public void StartTime() {
 		ResetState ();

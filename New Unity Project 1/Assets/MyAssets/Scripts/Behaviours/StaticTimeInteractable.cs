@@ -3,33 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 
 public abstract class StaticTimeInteractable : TimeInteractable {
-
-	private struct State : ITimeState {
-	}
-
 	private List<ITimeState> states = new List<ITimeState>();
 	private List<int> timeStamps = new List<int>();
 	private int stateIndex = -1;
+
+	protected override void RewindFixedUpdate() {
+		if (stateIndex > -1 && globalTimeStamp <= timeStamps [stateIndex]) {
+			RestoreState ();
+		}
+	}
 
 	public void StoreState() {
 		++stateIndex;
 		ITimeState temp = GetState ();
 		if (states.Count <= stateIndex) {
 			states.Add (temp);
-			timeStamps.Add (currentStateIndex);
+			timeStamps.Add (globalTimeStamp);
 		} else {
 			states [stateIndex] = temp;
-			timeStamps [stateIndex] = currentStateIndex;
-		}
-	}
-
-	protected override void FixedUpdate ()
-	{
-		base.FixedUpdate ();
-		if (timeState == TimeState.Rewind) {
-			if (stateIndex > -1 && currentStateIndex <= timeStamps [stateIndex]) {
-				RestoreState ();
-			}
+			timeStamps [stateIndex] = globalTimeStamp;
 		}
 	}
 
